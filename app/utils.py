@@ -1,3 +1,1 @@
-users = {
-    'user1': {'fullname': 'Dummy User', 'phone': '1234567890'},
-}
+# Utility functions can be added here when needed
