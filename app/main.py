@@ -10,15 +10,18 @@ app = FastAPI(title="N-Device Backend API")
 
 origins = [
     "http://localhost:3000",
-    os.getenv("FRONTEND_URL", "http://localhost:3000")
+    "https://localhost:3000",
+    os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    "*"  # Allow all origins for development (remove in production)
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 class SessionMiddleware(BaseHTTPMiddleware):
@@ -27,7 +30,8 @@ class SessionMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         path = request.url.path
-        if (path == "/auth/login" and request.method == "POST"):
+        # Allow login endpoints (including URL-encoded user IDs)
+        if (path.startswith("/auth/login/") and request.method == "POST"):
             return await call_next(request)
 
         user_id = request.headers.get("X-User-ID")
