@@ -8,12 +8,14 @@ import os
 
 app = FastAPI(title="N-Device Backend API")
 
-origins = ["*"]  # Allow all origins
+origins = [
+    os.getenv("FRONTEND_URL", "https://n-device-frontend.vercel.app")
+]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False,  # Must be False when using wildcard
+    allow_credentials=False,  # Match frontend (no credentials)
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
