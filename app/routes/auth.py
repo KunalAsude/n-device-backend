@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import uuid
+from urllib.parse import unquote
 from app.models import UserResponse, LoginRequest, Device, SessionInfo, LoginResponse, DevicesResponse, UserUpdate
 from app.database import sessions_collection, users_collection
 from bson import ObjectId
@@ -146,6 +147,9 @@ async def update_session_activity(device_id: str):
 
 @router.post("/login/{user_id}", response_model=LoginResponse)
 async def login_device(user_id: str, login_data: LoginRequest):
+    # Decode URL-encoded user_id
+    user_id = unquote(user_id)
+    
     user = await create_or_update_user(
         user_id=user_id,
         full_name=login_data.full_name,
@@ -204,6 +208,8 @@ async def login_device(user_id: str, login_data: LoginRequest):
 
 @router.get("/me/{user_id}", response_model=UserResponse)
 async def get_user_info(user_id: str):
+    # Decode URL-encoded user_id
+    user_id = unquote(user_id)
     user = await get_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -212,6 +218,8 @@ async def get_user_info(user_id: str):
 
 @router.put("/user/{user_id}", response_model=UserResponse)
 async def update_user_info(user_id: str, user_update: UserUpdate):
+    # Decode URL-encoded user_id
+    user_id = unquote(user_id)
     user = await get_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -240,6 +248,8 @@ async def update_user_info(user_id: str, user_update: UserUpdate):
 @router.get("/devices/{user_id}", response_model=DevicesResponse)
 async def get_user_devices(user_id: str):
     try:
+        # Decode URL-encoded user_id
+        user_id = unquote(user_id)
         user = await get_user_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
