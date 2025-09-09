@@ -10,10 +10,13 @@ app = FastAPI(title="N-Device Backend API")
 
 origins = [
     "http://localhost:3000",
-    "https://localhost:3000",
-    os.getenv("FRONTEND_URL", "http://localhost:3000"),
-    "*"  # Allow all origins for development (remove in production)
+    "https://localhost:3000", 
+    os.getenv("FRONTEND_URL", "http://localhost:3000")
 ]
+
+# Add wildcard for development only
+if os.getenv("ENVIRONMENT") != "production":
+    origins.append("*")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,7 +24,8 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["*"],
+    max_age=3600
 )
 
 class SessionMiddleware(BaseHTTPMiddleware):
