@@ -4,11 +4,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.database import sessions_collection
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI(title="N-Device Backend API")
 
 origins = [
-    "http://localhost:3000", 
+    "http://localhost:3000",
+    os.getenv("FRONTEND_URL", "http://localhost:3000")
 ]
 
 app.add_middleware(
