@@ -8,20 +8,12 @@ import os
 
 app = FastAPI(title="N-Device Backend API")
 
-origins = [
-    "http://localhost:3000",
-    "https://localhost:3000", 
-    os.getenv("FRONTEND_URL", "http://localhost:3000")
-]
-
-# Add wildcard for development only
-if os.getenv("ENVIRONMENT") != "production":
-    origins.append("*")
+origins = ["*"]  # Allow all origins
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
+    allow_credentials=False,  # Must be False when using wildcard
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
