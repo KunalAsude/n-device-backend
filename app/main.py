@@ -9,13 +9,19 @@ import os
 app = FastAPI(title="N-Device Backend API")
 
 origins = [
-    os.getenv("FRONTEND_URL", "https://n-device-frontend.vercel.app")
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "https://n-device-frontend.vercel.app",
+    "https://n-device-frontend-git-main-kunalasudes-projects.vercel.app",
+    "https://n-device-frontend-kunalasudes-projects.vercel.app",
+    os.getenv("FRONTEND_URL", "https://n-device-frontend.vercel.app"),
+    "*"  # Temporary for debugging
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False,  # Match frontend (no credentials)
+    allow_credentials=False,  # Must be False with wildcard
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
@@ -51,3 +57,7 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 @app.get("/")
 async def root():
     return {"message": "Welcome to the N-Device Backend API"}
+
+@app.get("/test-cors")
+async def test_cors():
+    return {"message": "CORS is working!", "timestamp": "2025-09-09"}
