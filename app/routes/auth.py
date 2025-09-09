@@ -10,45 +10,6 @@ from bson import ObjectId
 
 router = APIRouter()
 
-class LoginRequest(BaseModel):
-    device_id: str
-    device_name: str
-    full_name: str
-    email: str
-    phone: str
-    force: bool = False
-
-class UserResponse(BaseModel):
-    user_id: str
-    full_name: str
-    email: str
-    phone: str
-    device_limit: int
-    created_at: datetime
-    updated_at: datetime
-
-class Device(BaseModel):
-    device_id: str
-    device_name: str
-    last_active: datetime
-    is_current: bool = False
-
-class SessionInfo(BaseModel):
-    device_id: str
-    device_name: str
-    created_at: datetime
-    last_active: datetime
-
-class LoginResponse(BaseModel):
-    status: str
-    user: Optional[UserResponse] = None
-    active_sessions: Optional[List[SessionInfo]] = None
-    message: Optional[str] = None
-
-class DevicesResponse(BaseModel):
-    devices: List[Device]
-    total_count: int
-
 async def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
     return await users_collection.find_one({"user_id": user_id})
 
@@ -148,7 +109,10 @@ async def update_session_activity(device_id: str):
 @router.post("/login/{user_id}", response_model=LoginResponse)
 async def login_device(user_id: str, login_data: LoginRequest):
     # Decode URL-encoded user_id
+    original_user_id = user_id
     user_id = unquote(user_id)
+    print(f"Original user_id: {original_user_id}")
+    print(f"Decoded user_id: {user_id}")
     
     user = await create_or_update_user(
         user_id=user_id,
